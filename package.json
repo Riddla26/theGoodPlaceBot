@@ -1,0 +1,15 @@
+{
+  "name": "thegoodplacebot",
+  "version": "1.0.0",
+  "description": "A bot that parses user comments and awards/deducts points, then flairs the users with their point total.",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node index.js"
+  },
+  "author": "Robert Schillinger",
+  "license": "ISC",
+  "devDependencies": {
+    "jshint": "^2.9.6"
+  }
+}
