@@ -3,13 +3,25 @@
   "version": "1.0.0",
   "description": "A bot that parses user comments and awards/deducts points, then flairs the users with their point total.",
   "main": "index.js",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/rjschill87/theGoodPlaceBot.git"
+  },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "node index.js"
+    "start": "node -r dotenv/config index.js"
   },
   "author": "Robert Schillinger",
   "license": "ISC",
   "devDependencies": {
+    "eslint": "^5.9.0",
+    "eslint-config-airbnb-base": "^13.1.0",
+    "eslint-plugin-import": "^2.14.0",
     "jshint": "^2.9.6"
+  },
+  "dependencies": {
+    "dotenv": "^6.1.0",
+    "snoostorm": "0.0.5",
+    "snoowrap": "^1.15.2"
   }
 }
