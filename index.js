@@ -6,6 +6,7 @@ const sentiment = require('retext-sentiment');
 const english = require('retext-english');
 const profanities = require('retext-profanities');
 const vfile = require('to-vfile');
+const reporter = require('vfile-reporter-json');
 const fs = require('fs');
 
 // config
@@ -19,6 +20,7 @@ const config = {
   password: process.env.PASS,
 };
 
+// reddit wrappers
 const r = new snoowrap(config);
 const client = new snoostorm(r);
 
@@ -28,7 +30,43 @@ const commentStream = client.CommentStream({
   pollTime: 2000,
 });
 
-const analyzeComment = (path) => {
+const curseSubs = [
+  'fork',
+  'shirtballs',
+];
+
+const countOccurences = (string, value) => {
+  const reg = new RegExp(value, 'g');
+  const count = (string.match(reg) || []).length;
+
+  console.log(`count: ${count}`);
+  return count;
+};
+
+const scoreComment = (tree, warnings, comment) => {
+  const data = tree.data !== undefined ? tree.data : { polarity: 0 };
+
+  // see if we have any warnings for profanity, etc.
+  if (warnings.length > 0) {
+    warnings.forEach((warning) => {
+      const warningExists = warning.reason !== undefined && warning.reason === 'Warning!';
+
+      if (warningExists) {
+        data.polarity -= 1;
+      }
+    });
+  }
+
+  // award points if they use a sub instead of cursing, like the show
+  curseSubs.forEach((curseSub) => {
+    const points = countOccurences(comment, curseSub);
+    data.polarity += points;
+  });
+
+  return data;
+};
+
+const analyzeComment = (path, body) => {
   return new Promise((resolve) => {
     const processor = unified()
       .use(english)
@@ -40,11 +78,14 @@ const analyzeComment = (path) => {
 
     processor.run(tree, file);
 
-    if (tree.data) {
-      resolve({ data: tree.data, path });
-    } else {
-      resolve({ data: {}, path });
-    }
+    // generate report for profanity, etc.
+    const report = reporter([file]);
+    const [first] = report;
+    const { messages } = first;
+
+    const data = scoreComment(tree.data, messages, body);
+
+    resolve({ data, path });
   });
 };
 
@@ -74,7 +115,7 @@ const processComment = (body, id) => {
     let path;
 
     createFile(body, id)
-      .then(filepath => analyzeComment(filepath))
+      .then(filepath => analyzeComment(filepath, body))
       .then((_data) => {
         ({ data, path } = _data);
       })
