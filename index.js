@@ -76,7 +76,7 @@ const scoreComment = (tree, warnings, comment) => {
     weightedPoints += (occurences * 5);
   });
 
-  data.polarity += weightedPoints;
+  data.polarity = weightedPoints;
 
   return data;
 };
