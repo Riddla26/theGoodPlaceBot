@@ -22,6 +22,7 @@
   "dependencies": {
     "dotenv": "^6.1.0",
     "fs": "0.0.1-security",
+    "mongoose": "^5.3.14",
     "retext-english": "^3.0.2",
     "retext-intensify": "^3.0.2",
     "retext-profanities": "^4.5.0",
