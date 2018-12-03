@@ -23,6 +23,7 @@
     "dotenv": "^6.1.0",
     "fs": "0.0.1-security",
     "retext-english": "^3.0.2",
+    "retext-intensify": "^3.0.2",
     "retext-profanities": "^4.5.0",
     "retext-sentiment": "^4.1.1",
     "snoostorm": "0.0.5",
