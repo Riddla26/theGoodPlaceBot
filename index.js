@@ -30,7 +30,7 @@ const commentStream = client.CommentStream({
 
 const analyzeComment = (path) => {
   return new Promise((resolve) => {
-    let processor = unified()
+    const processor = unified()
       .use(english)
       .use(sentiment)
       .use(profanities);
@@ -46,13 +46,12 @@ const analyzeComment = (path) => {
       resolve({ data: {}, path });
     }
   });
-}
+};
 
-const createFile = (text) => {
+const createFile = (text, id) => {
   return new Promise((resolve) => {
-    const timestamp = new Date().getTime();
-    const path = `./comments/comment_${timestamp}.txt`;
-    fs.writeFile(path, text, (err) => {
+    const path = `./comments/comment_${id}.txt`;
+    fs.writeFile(path, text, { flag: 'w' }, (err) => {
       if (err) throw err;
 
       resolve(path);
@@ -69,21 +68,21 @@ const deleteFile = (path) => {
   });
 };
 
-const processComment = (body) => {
+const processComment = (body, id) => {
   return new Promise((resolve) => {
     let data = {};
     let path;
 
-    createFile(body)
+    createFile(body, id)
       .then(filepath => analyzeComment(filepath))
       .then((_data) => {
-        data = _data.data;
-        path = _data.path
+        ({ data, path } = _data);
       })
       .then(() => deleteFile(path))
       .then(() => {
         resolve(data);
-      });
+      })
+      .catch((err) => { throw err; });
   });
 };
 
@@ -91,7 +90,7 @@ const flairUser = (score, commentObj) => {
   const polarity = score.polarity !== undefined;
 
   if (polarity) {
-    const newScore = commentObj.currentScore + (polarity * 10);
+    const newScore = commentObj.currentScore + (score.polarity * 10);
 
     const flair = {
       subredditName: sub,
@@ -106,9 +105,10 @@ const flairUser = (score, commentObj) => {
 commentStream.on('comment', (comment) => {
   const commentObj = {
     author: comment.author.name,
-    currentScore: comment.author_flair_css_class,
+    currentScore: parseInt(comment.author_flair_css_class) || 0,
   };
 
-  processComment(comment.body)
-    .then(score => flairUser(score, commentObj));
+  processComment(comment.body, comment.id)
+    .then(score => flairUser(score, commentObj))
+    .catch((err) => { throw err; });
 });
