@@ -4,6 +4,7 @@ const snoostorm = require('snoostorm');
 const Comment = require('./components/comment');
 const db = require('./components/database');
 const dbConfig = require('./config/database');
+const User = require('./models/user');
 
 // start up our db
 db.init(dbConfig.url);
@@ -28,32 +29,19 @@ const commentStream = client.CommentStream({
   pollTime: 2000,
 });
 
-const flairUser = (score, commentObj) => {
-  const polarity = score.polarity !== undefined;
-
-  if (polarity) {
-    const newScore = commentObj.currentScore + score.polarity;
-
-    const flair = {
-      subredditName: sub,
-      text: 'Placeholder text here...',
-      cssClass: newScore,
-    };
-
-    // r.getUser(commentObj.author).assignFlair(flair);
-    console.log(`${commentObj.author} scored ${newScore} points!`);
-  }
-};
-
 commentStream.on('comment', (comment) => {
-  // const commentObj = {
-  //   author: comment.author.name,
-  //   currentScore: parseInt(comment.author_flair_css_class) || 0,
-  // };
-
   const parser = new Comment(comment.body, comment.id);
+  
   parser.processComment()
-    .then((score) => {
-      console.log('>>> score', score);
+    .then((data) => {
+      User.findOrCreate({ username: comment.author.name }, (err, user) => {
+        const score = data.polarity + user.score;
+
+        User.findOneAndUpdate({ _id: user._id }, { $set: { score } }, { new: true })
+          .exec()
+          .then((updatedUser) => {
+            console.log('>>> updatedUser', updatedUser);
+          });
+      });
     });
 });
