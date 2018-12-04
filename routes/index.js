@@ -12,15 +12,18 @@ module.exports = (app, db, r) => {
 
   app.route('/user/:username')
     .get((req, res) => {
-      console.log('>>> req username', req.params.username);
       User.findOne({ username: req.params.username })
-        .exec((err, user) => {
-          if (user) {
-            res.json(user);
-          } else {
-            User.verifyRedditUserExists(req.params.username, true)
-              .then(redditUser => res.json(redditUser));
+        .exec()
+        .then((existingUser) => {
+          if (!existingUser) {
+            return User.verifyRedditUserExists(req.params.username, true)
+              .then(redditUser => redditUser);
           }
+          return existingUser;
+        })
+        .then((user) => {
+          User.getOverallRank(user)
+            .then(completeUser => res.json(completeUser));
         });
     })
     .post((req, res) => {

@@ -53,4 +53,18 @@ userSchema.statics.verifyRedditUserExists = function verifyRedditUserExists(user
   });
 };
 
+userSchema.statics.getOverallRank = function getOverallRank(user) {
+  const self = this;
+  return new Promise((resolve) => {
+    self.find({})
+      .sort({ score: -1 })
+      .exec((err, users) => {
+        const userPosition = users.map((x) => x.username).indexOf(user.username);
+        const userFound = users[userPosition]['_doc'];
+        userFound.rank = userPosition + 1;
+        resolve(userFound);
+      });
+  });
+};
+
 module.exports = mongoose.model('User', userSchema);
