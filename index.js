@@ -27,7 +27,7 @@ app.get('/', (req, res) => {
 db.init(dbConfig.url);
 
 // reddit config
-const sub = 'TheGoodSandbox';
+const sub = 'TheGoodPlace';
 const config = {
   userAgent: 'GoodPlaceBot',
   clientId: process.env.ID,
