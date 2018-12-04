@@ -4,8 +4,7 @@ if (!process.env.DEV) {
 }
 
 const express = require('express');
-const snoowrap = require('snoowrap');
-const snoostorm = require('snoostorm');
+const Snoostorm = require('snoostorm');
 const async = require('async');
 
 const db = require('./components/database');
@@ -13,6 +12,7 @@ const dbConfig = require('./config/database');
 
 const Comment = require('./components/comment');
 const User = require('./models/user');
+const r = require('./lib/reddit')();
 
 const app = express();
 const port = process.env.PORT || 8080;
@@ -22,17 +22,9 @@ db.init(dbConfig.url);
 
 // reddit config
 const sub = 'TheGoodPlace';
-const config = {
-  userAgent: 'GoodPlaceBot',
-  clientId: process.env.ID,
-  clientSecret: process.env.SECRET,
-  username: process.env.USERNAME,
-  password: process.env.PASS,
-};
 
 // reddit wrappers
-const r = new snoowrap(config);
-const client = new snoostorm(r);
+const client = new Snoostorm(r);
 
 const commentStream = client.CommentStream({
   subreddit: sub,

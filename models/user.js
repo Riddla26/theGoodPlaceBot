@@ -1,4 +1,5 @@
 const mongoose = require('mongoose');
+const r = require('./../lib/reddit')();
 
 const { Schema } = mongoose;
 
@@ -23,6 +24,33 @@ userSchema.statics.getTen = function getTen(direction, callback) {
     .sort({ score: direction })
     .limit(10)
     .exec(callback);
+};
+
+userSchema.statics.verifyRedditUserExists = function verifyRedditUserExists(username, create) {
+  const self = this;
+  return new Promise((resolve) => {
+    r.getUser(username)
+      .getOverview()
+      .then(() => {
+        if (create) {
+          const user = new self({
+            username,
+            score: 0,
+          });
+
+          user.save((err) => {
+            if (!err) {
+              resolve(user);
+            }
+          });
+        } else {
+          resolve({ error: 'User exists but was not created' });
+        }
+      })
+      .catch(() => {
+        resolve({ error: 'Reddit user does not exist' });
+      });
+  });
 };
 
 module.exports = mongoose.model('User', userSchema);

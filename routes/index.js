@@ -1,32 +1,6 @@
 const User = require('./../models/user');
 
 module.exports = (app, db, r) => {
-  const verifyRedditUserExists = (username, create) => {
-    return new Promise((resolve) => {
-      r.getUser(username)
-        .getOverview()
-        .then(() => {
-          if (create) {
-            const user = new User({
-              username,
-              score: 0,
-            });
-
-            user.save((err) => {
-              if (!err) {
-                resolve(user);
-              }
-            });
-          } else {
-            resolve({ error: 'User exists but was not created' });
-          }
-        })
-        .catch(() => {
-          resolve({ error: 'Reddit user does not exist' });
-        });
-    });
-  };
-
   app.get('/', (req, res) => {
     User.find({})
       .sort({ score: -1 })
@@ -38,12 +12,13 @@ module.exports = (app, db, r) => {
 
   app.route('/user/:username')
     .get((req, res) => {
+      console.log('>>> req username', req.params.username);
       User.findOne({ username: req.params.username })
         .exec((err, user) => {
           if (user) {
             res.json(user);
           } else {
-            verifyRedditUserExists(req.params.username, true)
+            User.verifyRedditUserExists(req.params.username, true)
               .then(redditUser => res.json(redditUser));
           }
         });
@@ -56,7 +31,7 @@ module.exports = (app, db, r) => {
       const { score } = req.body;
       const { username } = req.params;
 
-      verifyRedditUserExists(username, true)
+      User.verifyRedditUserExists(username, true)
         .then((redditUser) => {
           if (redditUser.error) {
             return res.json(redditUser.error);
