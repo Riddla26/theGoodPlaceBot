@@ -62,7 +62,7 @@ userSchema.statics.getOverallRank = function getOverallRank(user) {
       .sort({ score: -1 })
       .exec((err, users) => {
         const userPosition = users.map(x => x.username).indexOf(user.username);
-        const userFound = users[userPosition]._doc;
+        const userFound = users[userPosition] && users[userPosition]._doc ? users[userPosition]._doc : { error: 'User does not exist' };
         userFound.rank = userPosition + 1;
         resolve(userFound);
       });

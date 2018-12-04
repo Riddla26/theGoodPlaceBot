@@ -23,6 +23,10 @@ module.exports = (app, db, r) => {
           return existingUser;
         })
         .then((user) => {
+          if (user.error) {
+            return res.json(user.error);
+          }
+
           User.getOverallRank(user)
             .then(completeUser => res.json(completeUser));
         });
