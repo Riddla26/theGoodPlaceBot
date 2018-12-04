@@ -11,10 +11,12 @@ const userSchema = new Schema({
   },
 });
 
-userSchema.statics.findOrCreate = function findOrCreate(condition, callback) {
+userSchema.statics.findOrCreate = function findOrCreate(username, callback) {
   const self = this;
-  self.findOne(condition, (err, result) => {
-    return result ? callback(err, result) : self.create(condition, (err, result) => { return callback(err, result) });
+  const regExName = new RegExp(username, 'i');
+  const regExCondition = { username: { $regex: regExName } };
+  self.findOne(regExCondition, (err, result) => {
+    return result ? callback(err, result) : self.create({ username }, (err, result) => { return callback(err, result) });
   });
 };
 
@@ -59,8 +61,8 @@ userSchema.statics.getOverallRank = function getOverallRank(user) {
     self.find({})
       .sort({ score: -1 })
       .exec((err, users) => {
-        const userPosition = users.map((x) => x.username).indexOf(user.username);
-        const userFound = users[userPosition]['_doc'];
+        const userPosition = users.map(x => x.username).indexOf(user.username);
+        const userFound = users[userPosition]._doc;
         userFound.rank = userPosition + 1;
         resolve(userFound);
       });
