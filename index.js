@@ -17,16 +17,6 @@ const User = require('./models/user');
 const app = express();
 const port = process.env.PORT || 8080;
 
-app.get('/', (req, res) => {
-  User.find({})
-    .sort({ score: -1 })
-    .exec((err, users) => {
-      const scoredUsers = users.filter(user => user.score !== 0);
-      res.json(scoredUsers);
-    });
-});
-
-
 // start up our db
 db.init(dbConfig.url);
 
@@ -89,5 +79,10 @@ const fetchScoreboard = () => {
     console.log('>>> scoreboard', scoreboard);
   });
 };
+
+// setup middleware
+require('./middleware')(app);
+// setup routes
+require('./routes')(app, db, r);
 
 app.listen(port, () => { console.log(`Now listening on port: ${port}`); });
