@@ -33,10 +33,10 @@ userSchema.statics.verifyRedditUserExists = function verifyRedditUserExists(user
   return new Promise((resolve) => {
     r.getUser(username)
       .getOverview()
-      .then(() => {
+      .then((redditUser) => {
         if (create) {
           const user = new self({
-            username,
+            username: redditUser[0].author.name,
             score: 0,
           });
 

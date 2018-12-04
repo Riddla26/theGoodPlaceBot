@@ -41,7 +41,7 @@ module.exports = (app, db, r) => {
             return res.json(redditUser.error);
           }
 
-          User.findOneAndUpdate({ username }, { $set: { score } }, { new: true, upsert: true })
+          User.findOneAndUpdate({ username: redditUser.username }, { $set: { score } }, { new: true, upsert: true })
             .exec()
             .then(updatedUser => res.json(updatedUser))
             .catch(err => res.json(err));
