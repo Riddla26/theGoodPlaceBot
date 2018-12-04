@@ -1,4 +1,5 @@
 // includes
+const express = require('express');
 const snoowrap = require('snoowrap');
 const snoostorm = require('snoostorm');
 const async = require('async');
@@ -8,6 +9,13 @@ const dbConfig = require('./config/database');
 
 const Comment = require('./components/comment');
 const User = require('./models/user');
+
+const app = express();
+const port = process.env.PORT || 8080;
+
+app.get('/', (req, res) => {
+  res.send('Hello and welcome to the Good Place!');
+});
 
 
 // start up our db
@@ -69,3 +77,5 @@ const fetchScoreboard = () => {
     console.log('>>> scoreboard', scoreboard);
   });
 };
+
+app.listen(port, () => { console.log(`Now listening on port: ${port}`); });
