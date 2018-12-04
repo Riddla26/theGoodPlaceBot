@@ -61,6 +61,7 @@ commentStream.on('comment', (comment) => {
         User.findOneAndUpdate({ _id: user._id }, { $set: { score } }, { new: true })
           .exec()
           .then((updatedUser) => {
+            console.log('>>> updated user', updatedUser);
             // if the user wants to know how many points they have...
             if (reply) {
               const newScore = updatedUser.score;
