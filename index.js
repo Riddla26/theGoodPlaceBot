@@ -14,7 +14,7 @@ const User = require('./models/user');
 db.init(dbConfig.url);
 
 // reddit config
-const sub = 'politics';
+const sub = 'theGoodPlace';
 const config = {
   userAgent: 'GoodPlaceBot',
   clientId: process.env.ID,
@@ -59,10 +59,10 @@ commentStream.on('comment', (comment) => {
 const fetchScoreboard = () => {
   async.parallel({
     highest: (callback) => {
-      User.getTen('desc', callback);
+      User.getTen(1, callback);
     },
     lowest: (callback) => {
-      User.getTen('asc', callback);
+      User.getTen(-1, callback);
     },
   }, (err, scoreboard) => {
     if (err) throw err;
