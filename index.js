@@ -1,4 +1,6 @@
 // includes
+require('newrelic');
+
 const express = require('express');
 const snoowrap = require('snoowrap');
 const snoostorm = require('snoostorm');
