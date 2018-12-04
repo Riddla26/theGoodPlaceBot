@@ -12,7 +12,8 @@ module.exports = (app, db, r) => {
 
   app.route('/user/:username')
     .get((req, res) => {
-      User.findOne({ username: req.params.username })
+      const regExName = new RegExp(req.params.username, 'i');
+      User.findOne({ username: { $regex: regExName } })
         .exec()
         .then((existingUser) => {
           if (!existingUser) {

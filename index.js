@@ -44,7 +44,8 @@ commentStream.on('comment', (comment) => {
 
   parser.processComment()
     .then((data) => {
-      User.findOrCreate({ username: comment.author.name }, (err, user) => {
+      const regExName = new RegExp(comment.author.name, 'i');
+      User.findOrCreate({ username: { $regex: regExName } }, (err, user) => {
         const score = reset ? 0 : data.polarity + user.score;
 
         User.findOneAndUpdate({ _id: user._id }, { $set: { score } }, { new: true })
