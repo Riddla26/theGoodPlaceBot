@@ -1,5 +1,7 @@
 // includes
-require('newrelic');
+if (!process.env.DEV) {
+  require('newrelic');
+}
 
 const express = require('express');
 const snoowrap = require('snoowrap');
