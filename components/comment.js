@@ -7,9 +7,10 @@ const vfile = require('to-vfile');
 const reporter = require('vfile-reporter-json');
 const fs = require('fs');
 
-const curseSubs = [
+const bonusWords = [
   'fork',
   'shirtball',
+  'bortles',
 ];
 
 const processor = unified()
@@ -72,8 +73,8 @@ class Comment {
     }
 
     // award points if they use a sub instead of cursing, like the show
-    curseSubs.forEach((curseSub) => {
-      const occurences = countOccurences(this.body, curseSub);
+    bonusWords.forEach((bonusWord) => {
+      const occurences = countOccurences(this.body, bonusWord);
       weightedPoints += (occurences * 5);
     });
 
