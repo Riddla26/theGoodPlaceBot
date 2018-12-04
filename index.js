@@ -27,7 +27,7 @@ app.get('/', (req, res) => {
 db.init(dbConfig.url);
 
 // reddit config
-const sub = 'theGoodPlace';
+const sub = 'TheGoodSandbox';
 const config = {
   userAgent: 'GoodPlaceBot',
   clientId: process.env.ID,
@@ -50,6 +50,8 @@ commentStream.on('comment', (comment) => {
   const parser = new Comment(comment.body, comment.id);
   const reset = comment.body.includes('!hitTheButtonMichael');
   const reply = comment.body.includes('!tellMeMyScore');
+
+  console.log('>>> comment created');
 
   parser.processComment()
     .then((data) => {
