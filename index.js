@@ -44,6 +44,9 @@ commentStream.on('comment', (comment) => {
   const parser = new Comment(comment.body, comment.id);
   const reset = comment.body.includes('!hitTheButtonMichael');
   const reply = comment.body.includes('!tellMeMyScore');
+  const replyString = (score, name) => {
+    return `You have ${score} points, ${name}! \n\n This is an automated reply. You can view my code [here](https://github.com/rjschill87/theGoodPlaceBot).`;
+  };
 
   console.log('>>> comment created');
 
@@ -59,7 +62,7 @@ commentStream.on('comment', (comment) => {
             // if the user wants to know how many points they have...
             if (reply) {
               const newScore = updatedUser.score;
-              r.getComment(comment.id).reply(`You have ${newScore} points, ${comment.author.name}!`);
+              r.getComment(comment.id).reply(replyString);
             }
           });
       });
