@@ -1,13 +1,14 @@
 // includes
+const snoowrap = require('snoowrap');
+const snoostorm = require('snoostorm');
+const async = require('async');
+
 const db = require('./components/database');
 const dbConfig = require('./config/database');
 
 const Comment = require('./components/comment');
 const User = require('./models/user');
 
-const snoowrap = require('snoowrap');
-const snoostorm = require('snoostorm');
-const async = require('async');
 
 // start up our db
 db.init(dbConfig.url);
@@ -34,16 +35,22 @@ const commentStream = client.CommentStream({
 
 commentStream.on('comment', (comment) => {
   const parser = new Comment(comment.body, comment.id);
+  const reset = comment.body.includes('!hitTheButtonMichael');
+  const reply = comment.body.includes('!tellMeMyScore');
 
   parser.processComment()
     .then((data) => {
       User.findOrCreate({ username: comment.author.name }, (err, user) => {
-        const score = data.polarity + user.score;
+        const score = reset ? 0 : data.polarity + user.score;
 
         User.findOneAndUpdate({ _id: user._id }, { $set: { score } }, { new: true })
           .exec()
           .then((updatedUser) => {
-            console.log('>>> updatedUser', updatedUser);
+            // if the user wants to know how many points they have...
+            if (reply) {
+              const newScore = updatedUser.score;
+              r.getComment(comment.id).reply(`You have ${newScore} points, ${comment.author.name}!`);
+            }
           });
       });
     });
