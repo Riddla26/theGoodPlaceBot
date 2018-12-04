@@ -14,7 +14,12 @@ const app = express();
 const port = process.env.PORT || 8080;
 
 app.get('/', (req, res) => {
-  res.send('Hello and welcome to the Good Place!');
+  User.find({})
+    .sort({ score: -1 })
+    .exec((err, users) => {
+      const scoredUsers = users.filter(user => user.score !== 0);
+      res.json(scoredUsers);
+    });
 });
 
 
