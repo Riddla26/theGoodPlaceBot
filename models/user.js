@@ -11,6 +11,8 @@ const userSchema = new Schema({
   },
 });
 
+const sub = process.env.SUB;
+
 userSchema.statics.findOrCreate = function findOrCreate(username, callback) {
   const self = this;
   const regExName = new RegExp(username, 'i');
@@ -67,6 +69,19 @@ userSchema.statics.getOverallRank = function getOverallRank(user) {
         resolve(userFound);
       });
   });
+};
+
+userSchema.statics.getFlair = function updateFlair(username) {
+  return new Promise((resolve) => {
+    r.getSubreddit(sub)
+      .getUserFlair(username)
+      .then(flair => resolve(flair));
+  });
+};
+
+userSchema.statics.updateFlair = function updateFlair(username, flairClass, flairObject) {
+  const newFlair = {...flairObject, cssClass: flairClass};
+  r.getUser(username).assignFlair(newFlair);
 };
 
 module.exports = mongoose.model('User', userSchema);

@@ -20,43 +20,37 @@ const port = process.env.PORT || 8080;
 // start up our db
 db.init(dbConfig.url);
 
-// reddit config
-const sub = 'TheGoodPlace';
-
 // reddit wrappers
 const client = new Snoostorm(r);
 
 const commentStream = client.CommentStream({
-  subreddit: sub,
+  subreddit: process.env.SUB,
   results: 20,
   pollTime: 2000,
 });
 
-commentStream.on('comment', (comment) => {
+commentStream.on('comment', async (comment) => {
   const parser = new Comment(comment.body, comment.id);
-  const reset = comment.body.includes('!hitTheButtonMichael');
+  const processedComment = await parser.processComment();
+  // const reset = comment.body.includes('!hitTheButtonMichael');
+  const reset = false;
   const reply = comment.body.includes('!tellMeMyScore');
   const replyString = (score, name) => {
     return `You have ${score} points, ${name}! \n\n This is an automated reply. You can view my code [here](https://github.com/rjschill87/theGoodPlaceBot).`;
   };
 
-  console.log('>>> comment created');
+  User.findOrCreate(comment.author.name, (err, user) => {
+    const score = reset ? 0 : parseInt(processedComment.polarity) + parseInt(user.score);
 
-  parser.processComment()
-    .then((data) => {
-      User.findOrCreate(comment.author.name, (err, user) => {
-        const score = reset ? 0 : parseInt(data.polarity) + parseInt(user.score);
-
-        User.findOneAndUpdate({ _id: user._id }, { $set: { score } }, { new: true })
-          .exec()
-          .then((updatedUser) => {
-            // if the user wants to know how many points they have...
-            if (reply) {
-              r.getComment(comment.id).reply(replyString(score, updatedUser.username));
-            }
-          });
+    User.findOneAndUpdate({ _id: user._id }, { $set: { score } }, { new: true })
+      .exec()
+      .then((updatedUser) => {
+        // if the user wants to know how many points they have...
+        if (reply) {
+          r.getComment(comment.id).reply(replyString(score, updatedUser.username));
+        }
       });
-    });
+  });
 });
 
 const fetchScoreboard = () => {

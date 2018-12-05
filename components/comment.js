@@ -56,6 +56,18 @@ class Comment {
     const data = tree.polarity !== undefined ? tree : { polarity: 0 };
     let weightedPoints = data.polarity >= 0 ? data.polarity * 5 : data.polarity;
 
+    // points for tone!
+    switch (tree.valence) {
+      case 'positive':
+        weightedPoints += 10;
+        break;
+      case 'negative':
+        weightedPoints -= 5;
+        break;
+      default:
+        break;
+    }
+
     // see if we have any warnings for profanity, etc.
     if (warnings && warnings.length > 0) {
       warnings.forEach((warning) => {
