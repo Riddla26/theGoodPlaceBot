@@ -25,9 +25,9 @@ db.init(dbConfig.url);
 
 // run our weekly awards
 // keeping on dev for now
-if (process.env.DEV) {
-  jobRunner.run();
-}
+// if (process.env.DEV) {
+//   jobRunner.run();
+// }
 
 // reddit wrappers
 const client = new snoostorm(r);
