@@ -4,7 +4,6 @@ if (!process.env.DEV) {
 }
 
 const express = require('express');
-const Snoostorm = require('snoostorm');
 const async = require('async');
 
 const db = require('./components/database');
@@ -12,7 +11,8 @@ const dbConfig = require('./config/database');
 
 const Comment = require('./components/comment');
 const User = require('./models/user');
-const r = require('./lib/reddit')();
+const { r, client } = require('./lib/reddit')();
+const jobRunner = require('./components/scheduler');
 
 const app = express();
 const port = process.env.PORT || 8080;
@@ -20,9 +20,10 @@ const port = process.env.PORT || 8080;
 // start up our db
 db.init(dbConfig.url);
 
-// reddit wrappers
-const client = new Snoostorm(r);
+// run our weekly awards
+jobRunner.run();
 
+// reddit wrappers
 const commentStream = client.CommentStream({
   subreddit: process.env.SUB,
   results: 20,
