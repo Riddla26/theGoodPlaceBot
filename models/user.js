@@ -80,7 +80,13 @@ userSchema.statics.getFlair = function updateFlair(username) {
 };
 
 userSchema.statics.updateFlair = function updateFlair(username, flairClass, flairObject) {
-  const newFlair = {...flairObject, cssClass: flairClass};
+  const newFlair = {
+    subredditName: sub,
+    text: flairObject.flair_text,
+    cssClass: flairClass,
+  };
+
+  console.log('>>> new flair', newFlair);
   r.getUser(username).assignFlair(newFlair);
 };
 

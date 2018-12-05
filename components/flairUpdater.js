@@ -5,7 +5,7 @@ const awardClasses = [
   'abovemindy',
   'mindy',
   'hemsworthless',
-  'best-person',
+  'bestperson',
 ];
 
 const stripPreviousAwardFlair = (flairs) => {
@@ -14,7 +14,7 @@ const stripPreviousAwardFlair = (flairs) => {
 
 const awardNewAwardFlair = (user, flairs, index) => {
   if (index === 0 || index === 1) {
-    flairs.push(index === 0 ? 'best-person' : 'hemsworthless');
+    flairs.push(index === 0 ? 'bestperson' : 'hemsworthless');
   } else {
     switch (true) {
       case user.score > 0:
