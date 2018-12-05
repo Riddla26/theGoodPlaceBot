@@ -21,7 +21,10 @@ const port = process.env.PORT || 8080;
 db.init(dbConfig.url);
 
 // run our weekly awards
-jobRunner.run();
+// keeping on dev for now
+if (process.env.DEV) {
+  jobRunner.run();
+}
 
 // reddit wrappers
 const commentStream = client.CommentStream({
