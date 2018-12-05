@@ -1,10 +1,12 @@
 const { CronJob } = require('cron');
 const flairUpdater = require('./flairUpdater');
 
+const cronString = process.env.DEV ? '0 */10 * * * *' : '0 23 55 * * 6';
+
 const jobRunner = {
   run: () => {
     const job = new CronJob({
-      cronTime: '0 23 55 * * 6',
+      cronTime: cronString,
       onTick: flairUpdater.updateAllFlairs,
       start: false,
       timeZone: 'America/New_York',
