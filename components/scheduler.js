@@ -1,8 +1,8 @@
 const { CronJob } = require('cron');
 const flairUpdater = require('./flairUpdater');
 
-const cronString = '0 23 55 * * 6';
-
+const cronString = (process.env.DEV) ? '0 */10 * * * *' : '0 23 55 * * 6';
+console.log('>>> cron string', cronString);
 const jobRunner = {
   run: () => {
     const job = new CronJob({

@@ -25,9 +25,10 @@ db.init(dbConfig.url);
 
 // run our weekly awards
 // keeping on dev for now
-// if (process.env.DEV) {
-//   jobRunner.run();
-// }
+if (process.env.DEV) {
+  console.log('>>> starting jobs');
+  jobRunner.run();
+}
 
 // reddit wrappers
 const client = new snoostorm(r);
@@ -80,4 +81,4 @@ require('./middleware')(app);
 // setup routes
 require('./routes')(app, db, r);
 
-app.listen(port, () => { console.log(`DEV:${process.env.DEV}: Now listening on port: ${port}`); });
+app.listen(port, () => { console.log(`ENV-DEV:${process.env.DEV}: Now listening on port: ${port}`); });
