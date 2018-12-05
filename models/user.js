@@ -1,5 +1,5 @@
 const mongoose = require('mongoose');
-const { r } = require('./../lib/reddit')();
+const r = require('./../lib/reddit')();
 
 const { Schema } = mongoose;
 

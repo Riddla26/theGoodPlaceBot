@@ -49,6 +49,7 @@ const updateFlair = (user, index) => {
 
 const flairUpdater = {
   updateAllFlairs: () => {
+    console.log('>>> updated flairs');
     User.find({})
       .sort({ score: -1 })
       .exec((err, users) => {

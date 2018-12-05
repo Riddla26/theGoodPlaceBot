@@ -6,12 +6,15 @@ if (!process.env.DEV) {
 const express = require('express');
 const async = require('async');
 
+const snoowrap = require('snoowrap');
+const snoostorm = require('snoostorm');
+
 const db = require('./components/database');
 const dbConfig = require('./config/database');
 
 const Comment = require('./components/comment');
 const User = require('./models/user');
-const { r, client } = require('./lib/reddit')();
+const r = require('./lib/reddit')();
 const jobRunner = require('./components/scheduler');
 
 const app = express();
@@ -27,10 +30,11 @@ if (process.env.DEV) {
 }
 
 // reddit wrappers
+const client = new snoostorm(r);
 const commentStream = client.CommentStream({
   subreddit: process.env.SUB,
-  results: 20,
-  pollTime: 2000,
+  results: 25,
+  pollTime: 10000,
 });
 
 commentStream.on('comment', async (comment) => {
@@ -76,4 +80,4 @@ require('./middleware')(app);
 // setup routes
 require('./routes')(app, db, r);
 
-app.listen(port, () => { console.log(`Now listening on port: ${port}`); });
+app.listen(port, () => { console.log(`DEV:${process.env.DEV}: Now listening on port: ${port}`); });
