@@ -38,8 +38,8 @@ commentStream.on('comment', async (comment) => {
   // const reset = comment.body.includes('!hitTheButtonMichael');
   const reset = false;
   const reply = comment.body.includes('!tellMeMyScore');
-  const replyString = (score, name) => {
-    return `You have ${score} points, ${name}! \n\n This is an automated reply. You can view my code [here](https://github.com/rjschill87/theGoodPlaceBot).`;
+  const replyString = (user) => {
+    return `You have ${user.score} points, ${user.username}! \n\n That puts you about... rank ${user.rank}. Hm. No what I expected. \n\n This is an automated reply. You can view my code [here](https://github.com/rjschill87/theGoodPlaceBot).`;
   };
 
   User.findOrCreate(comment.author.name, (err, user) => {
@@ -47,10 +47,11 @@ commentStream.on('comment', async (comment) => {
 
     User.findOneAndUpdate({ _id: user._id }, { $set: { score } }, { new: true })
       .exec()
-      .then((updatedUser) => {
-        // if the user wants to know how many points they have...
+      .then((updatedUser) => User.getOverallRank(updatedUser))
+      .then((rankedUser) => {
         if (reply) {
-          r.getComment(comment.id).reply(replyString(score, updatedUser.username));
+          r.getComment(comment.id)
+            .reply(replyString(rankedUser));
         }
       });
   });
