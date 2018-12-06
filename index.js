@@ -104,7 +104,9 @@ const startSubmissionStream = () => {
             fetchScoreboard()
               .then((users) => {
                 const reply = leaderboardPost(users);
-                r.getSubmission(post.id).reply(reply);
+                r.getSubmission(post.id)
+                  .reply(reply)
+                  .distinguish({ status: true, sticky: true });
               });
           }
         });
