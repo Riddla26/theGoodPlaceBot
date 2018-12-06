@@ -24,6 +24,4 @@ const jobRunner = {
   },
 };
 
-flairHandler.removeAwardFlairs();
-
 module.exports = jobRunner;
