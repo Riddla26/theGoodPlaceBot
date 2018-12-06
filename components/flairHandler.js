@@ -1,4 +1,4 @@
-const User = require('./../models/user');
+const User = require('../models/user');
 
 const awardClasses = [
   'belowmindy',
@@ -48,20 +48,42 @@ const updateFlair = (user, index) => {
     });
 };
 
-const flairUpdater = {
+let previousWeekRanking;
+
+const updateRanking = (sort, func) => {
+  return new Promise((resolve) => {
+    User.find({})
+      .sort({ score: sort })
+      .exec((err, users) => {
+        previousWeek = users;
+        users.forEach((storedUser, index) => {
+          setTimeout(() => {
+            func(storedUser, index);
+          }, 2500);
+        });
+
+        resolve();
+      });
+  });
+};
+
+const flairHandler = {
   updateAllFlairs: () => {
     console.log('>>> updated flairs');
-    User.find({})
-      .sort({ score: -1 })
-      .exec((err, users) => {
-        users.forEach((storedUser, index) => {
-          // just we don't hit reddit's rate limiter
-          setTimeout(() => {
-            updateFlair(storedUser, index);
-          }, 2250);
-        });
-      });
+    return updateRanking(-1, updateFlair);
+  },
+
+  verifyAllFlairs: () => {
+    if (!previousWeekRanking || !previousWeekRanking.length) {
+      return updateRanking(-1, updateFlair);
+    }
+
+    previousWeekRanking.forEach((user, index) => {
+      setTimeout(() => {
+        updateFlair(user, index);
+      }, 2500);
+    });
   },
 };
 
-module.exports = flairUpdater;
+module.exports = flairHandler;

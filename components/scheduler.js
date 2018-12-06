@@ -1,18 +1,25 @@
 const { CronJob } = require('cron');
-const flairUpdater = require('./flairUpdater');
+const flairHandler = require('./flairHandler');
 
-const cronString = (process.env.DEV) ? '0 */10 * * * *' : '0 30 20 * * 4';
-
+const cronString = (process.env.DEV) ? '0 */5 * * * *' : '0 30 20 * * 4';
 const jobRunner = {
   run: () => {
-    const job = new CronJob({
+    const job1 = new CronJob({
       cronTime: cronString,
-      onTick: flairUpdater.updateAllFlairs,
+      onTick: flairHandler.updateAllFlairs,
       start: false,
       timeZone: 'America/New_York',
     });
 
-    job.start();
+    const job2 = new CronJob({
+      cronTime: '0 0 */6 * * *',
+      onTick: flairHandler.verifyAllFlairs,
+      start: false,
+      timeZone: 'America/New_York',
+    });
+
+    job1.start();
+    // job2.start();
   },
 };
 
