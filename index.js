@@ -112,7 +112,7 @@ const startSubmissionStream = () => {
   }, 5000);
 };
 
-startSubmissionStream()
+startSubmissionStream();
 
 // setup middleware
 require('./middleware')(app);

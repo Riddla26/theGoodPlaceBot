@@ -45,7 +45,7 @@ const updateFlair = (user, index, awardFlair) => {
       if (awardFlair) {
         flairArray = awardNewAwardFlair(user, flairArray, index);
       }
-      
+
       flairClass = flairArray.join(' ');
 
       User.updateFlair(user.username, flairClass, flair);
@@ -60,9 +60,7 @@ const updateRanking = (sort, func, awardNew, reset = false) => {
       .sort({ score: sort })
       .exec((err, users) => {
         users.forEach((storedUser, index) => {
-          setTimeout(() => {
-            func(storedUser, index, awardNew);
-          }, 2500);
+          func(storedUser, index, awardNew);
         });
 
         if (reset) {

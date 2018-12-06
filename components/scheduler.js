@@ -12,16 +12,18 @@ const jobRunner = {
       timeZone: 'America/New_York',
     });
 
-    const job2 = new CronJob({
-      cronTime: '0 0 */6 * * *',
-      onTick: flairHandler.verifyAllFlairs,
-      start: false,
-      timeZone: 'America/New_York',
-    });
+    // const job2 = new CronJob({
+    //   cronTime: '0 0 */6 * * *',
+    //   onTick: flairHandler.verifyAllFlairs,
+    //   start: false,
+    //   timeZone: 'America/New_York',
+    // });
 
-    // job1.start();
+    job1.start();
     // job2.start();
   },
 };
+
+flairHandler.removeAwardFlairs();
 
 module.exports = jobRunner;
