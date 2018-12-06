@@ -70,7 +70,7 @@ const fetchScoreboard = () => {
 };
 
 const leaderboardPost = (users) => {
-  let replyString = '|| Neighborhood Rankings || \n\n :---:|---|---';
+  let replyString = '|| Neighborhood Rankings || \n\n :---:|---|--- \n\n';
 
   users.forEach((user, index) => {
     const rank = index + 1;
