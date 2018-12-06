@@ -35,13 +35,17 @@ const awardNewAwardFlair = (user, flairs, index) => {
   return flairs;
 };
 
-const updateFlair = (user, index) => {
+const updateFlair = (user, index, awardFlair) => {
   User.getFlair(user.username)
     .then((flair) => {
       let flairClass = flair.flair_css_class;
       let flairArray = flair.flair_css_class !== null ? flairClass.split(' ') : [];
       flairArray = stripPreviousAwardFlair(flairArray);
-      flairArray = awardNewAwardFlair(user, flairArray, index);
+
+      if (awardFlair) {
+        flairArray = awardNewAwardFlair(user, flairArray, index);
+      }
+      
       flairClass = flairArray.join(' ');
 
       User.updateFlair(user.username, flairClass, flair);
@@ -50,17 +54,20 @@ const updateFlair = (user, index) => {
 
 let previousWeekRanking;
 
-const updateRanking = (sort, func) => {
+const updateRanking = (sort, func, awardNew, reset = false) => {
   return new Promise((resolve) => {
     User.find({})
       .sort({ score: sort })
       .exec((err, users) => {
-        previousWeek = users;
         users.forEach((storedUser, index) => {
           setTimeout(() => {
-            func(storedUser, index);
+            func(storedUser, index, awardNew);
           }, 2500);
         });
+
+        if (reset) {
+          previousWeek = users;
+        }
 
         resolve();
       });
@@ -70,12 +77,12 @@ const updateRanking = (sort, func) => {
 const flairHandler = {
   updateAllFlairs: () => {
     console.log('>>> updated flairs');
-    return updateRanking(-1, updateFlair);
+    return updateRanking(-1, updateFlair, true, true);
   },
 
   verifyAllFlairs: () => {
     if (!previousWeekRanking || !previousWeekRanking.length) {
-      return updateRanking(-1, updateFlair);
+      return updateRanking(-1, updateFlair, true, true);
     }
 
     previousWeekRanking.forEach((user, index) => {
@@ -83,6 +90,10 @@ const flairHandler = {
         updateFlair(user, index);
       }, 2500);
     });
+  },
+
+  removeAwardFlairs: () => {
+    return updateRanking(-1, updateFlair, false, false);
   },
 };
 
