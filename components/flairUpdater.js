@@ -58,7 +58,7 @@ const flairUpdater = {
           // just we don't hit reddit's rate limiter
           setTimeout(() => {
             updateFlair(storedUser, index);
-          }, 2000);
+          }, 2250);
         });
       });
   },
