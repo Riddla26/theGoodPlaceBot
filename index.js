@@ -26,9 +26,10 @@ jobRunner.run();
 
 // reddit wrappers
 const client = new snoostorm(r);
+
 const commentStream = client.CommentStream({
   subreddit: process.env.SUB,
-  results: 25,
+  results: 20,
   pollTime: 10000,
 });
 
@@ -58,18 +59,60 @@ commentStream.on('comment', async (comment) => {
 });
 
 const fetchScoreboard = () => {
-  async.parallel({
-    highest: (callback) => {
-      User.getTen(1, callback);
-    },
-    lowest: (callback) => {
-      User.getTen(-1, callback);
-    },
-  }, (err, scoreboard) => {
-    if (err) throw err;
-    console.log('>>> scoreboard', scoreboard);
+  return new Promise((resolve) => {
+    User.find({})
+      .sort({ score: -1 })
+      .limit(10)
+      .exec((err, users) => {
+        resolve(users);
+      });
   });
 };
+
+const leaderboardPost = (users) => {
+  let replyString = '# Neighborhood Rankings \n\n';
+
+  users.forEach((user, index) => {
+    const rank = index + 1;
+    const userString = `${rank}. ${user.username} \n\n`;
+    replyString += userString;
+  });
+
+  return replyString;
+};
+
+const removeDuplicates = (lastBatch, posts, start) => {
+  return posts.filter((post) => {
+    return lastBatch.every(a => a.id !== post.id) && post.created_utc >= start / 1000;
+  });
+};
+
+const startSubmissionStream = () => {
+  let lastBatch = [];
+  const start = Date.now();
+
+  setInterval(() => {
+    r.getSubreddit(process.env.SUB)
+      .getNew({ limit: 10 })
+      .then((posts) => {
+        const newPosts = removeDuplicates(lastBatch, posts, start);
+
+        lastBatch = posts;
+
+        newPosts.forEach((post) => {
+          if (post.title.includes('Episode Discussion')) {
+            fetchScoreboard()
+              .then((users) => {
+                const reply = leaderboardPost(users);
+                r.getSubmission(post.id).reply(reply);
+              });
+          }
+        });
+      });
+  }, 5000);
+};
+
+startSubmissionStream()
 
 // setup middleware
 require('./middleware')(app);

@@ -2,6 +2,7 @@ const { CronJob } = require('cron');
 const flairHandler = require('./flairHandler');
 
 const cronString = (process.env.DEV) ? '0 */5 * * * *' : '0 30 20 * * 4';
+console.log('>>> cronString', cronString);
 const jobRunner = {
   run: () => {
     const job1 = new CronJob({
@@ -18,7 +19,7 @@ const jobRunner = {
       timeZone: 'America/New_York',
     });
 
-    job1.start();
+    // job1.start();
     // job2.start();
   },
 };
