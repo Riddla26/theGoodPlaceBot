@@ -6,6 +6,7 @@ const awardClasses = [
   'mindy',
   'hemsworthless',
   'bestperson',
+  'best-person',
 ];
 
 const stripPreviousAwardFlair = (flairs) => {

@@ -5,8 +5,6 @@ if (!process.env.DEV) {
 
 const express = require('express');
 const async = require('async');
-
-const snoowrap = require('snoowrap');
 const snoostorm = require('snoostorm');
 
 const db = require('./components/database');
@@ -24,11 +22,7 @@ const port = process.env.PORT || 8080;
 db.init(dbConfig.url);
 
 // run our weekly awards
-// keeping on dev for now
-if (process.env.DEV) {
-  console.log('>>> starting jobs');
-  jobRunner.run();
-}
+jobRunner.run();
 
 // reddit wrappers
 const client = new snoostorm(r);
