@@ -24,4 +24,6 @@ const jobRunner = {
   },
 };
 
+flairHandler.updateAllFlairs();
+
 module.exports = jobRunner;
