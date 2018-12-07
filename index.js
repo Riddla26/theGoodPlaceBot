@@ -34,7 +34,20 @@ const commentStream = client.CommentStream({
   pollTime: 10000,
 });
 
+const isExempt = (author) => {
+  const exempt = [
+    'AutoModerator',
+    'AccountingBot'
+  ];
+
+  return exempt.includes(author); 
+};
+
 commentStream.on('comment', async (comment) => {
+  if (isExempt(comment.author.name)) {
+    return;
+  }
+  
   const parser = new Comment(comment.body, comment.id);
   const processedComment = await parser.processComment();
   // const reset = comment.body.includes('!hitTheButtonMichael');
