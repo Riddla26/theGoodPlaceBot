@@ -7,13 +7,14 @@ const express = require('express');
 const async = require('async');
 const snoostorm = require('snoostorm');
 
-const db = require('./components/database');
+const db = require('./lib/database');
 const dbConfig = require('./config/database');
 
 const Comment = require('./components/comment');
+const Reply = require('./components/reply');
 const User = require('./models/user');
 const r = require('./lib/reddit')();
-const jobRunner = require('./components/scheduler');
+const jobRunner = require('./lib/scheduler');
 
 const app = express();
 const port = process.env.PORT || 8080;
@@ -51,35 +52,12 @@ commentStream.on('comment', async (comment) => {
       .then((updatedUser) => User.getOverallRank(updatedUser))
       .then((rankedUser) => {
         if (reply) {
-          r.getComment(comment.id)
-            .reply(replyString(rankedUser));
+          const botReply = new Reply(comment.id);
+          botReply.replyToComment(rankedUser);
         }
       });
   });
 });
-
-const fetchScoreboard = () => {
-  return new Promise((resolve) => {
-    User.find({})
-      .sort({ score: -1 })
-      .limit(10)
-      .exec((err, users) => {
-        resolve(users);
-      });
-  });
-};
-
-const leaderboardPost = (users) => {
-  let replyString = '||Neighborhood Rankings||\n:---:|---|---\n';
-
-  users.forEach((user, index) => {
-    const rank = index + 1;
-    const userString = `${rank}|${user.username}|${user.score}\n`;
-    replyString += userString;
-  });
-
-  return replyString;
-};
 
 const removeDuplicates = (lastBatch, posts, start) => {
   return posts.filter((post) => {
@@ -101,13 +79,8 @@ const startSubmissionStream = () => {
 
         newPosts.forEach((post) => {
           if (post.title.includes('Episode Discussion')) {
-            fetchScoreboard()
-              .then((users) => {
-                const reply = leaderboardPost(users);
-                r.getSubmission(post.id)
-                  .reply(reply)
-                  .distinguish({ status: true, sticky: true });
-              });
+            const botReply = new Reply(post.id);
+            botReply.replyToPost();
           }
         });
       });

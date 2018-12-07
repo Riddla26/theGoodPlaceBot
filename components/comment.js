@@ -87,7 +87,7 @@ class Comment {
     // award points if they use a sub instead of cursing, like the show
     bonusWords.forEach((bonusWord) => {
       const occurences = countOccurences(this.body, bonusWord);
-      weightedPoints += (occurences * 5);
+      weightedPoints += (occurences * 3);
     });
 
     data.polarity = weightedPoints;
@@ -99,16 +99,16 @@ class Comment {
     return new Promise((resolve) => {
       const file = vfile.readSync(this.path);
       const tree = processor.parse(file);
-  
+
       processor.run(tree, file);
-  
+
       // generate report for profanity, etc.
       const report = reporter([file]);
       const [first] = JSON.parse(report);
       const { messages } = first;
-  
+
       const data = this.scoreComment(tree.data, messages);
-  
+
       resolve({ data, path: this.path });
     });
   }
