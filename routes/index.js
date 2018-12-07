@@ -50,5 +50,17 @@ module.exports = (app, db, r) => {
             .then(updatedUser => res.json(updatedUser))
             .catch(err => res.json(err));
         });
+    })
+    .delete((req, res) => {
+      if (!req.body.key || req.body.key !== process.env.POSTKEY) {
+        return res.json({ error: 'Incorrect key provided' });
+      }
+
+      const { username } = req.params;
+
+      User.findOneAndDelete({ username })
+        .exec((err, deletedUser) => {
+          return res.json({ deleted: deletedUser });
+        });
     });
 };
