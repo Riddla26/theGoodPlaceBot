@@ -45,7 +45,7 @@ class Reply {
       .reply(reply);
   }
 
-  replyToPost() {
+  replyWithLeaderboard() {
     fetchScoreboard()
       .then((users) => {
         const reply = leaderboardPost(users);
@@ -53,6 +53,20 @@ class Reply {
           .reply(reply)
           .distinguish({ status: true, sticky: true });
       });
+  }
+
+  replyWithDeduction(username) {
+    User.findOrCreate(username, (err, user) => {
+      const score = user.score - 75;
+      User.findOneAndUpdate({ _id: user._id }, { $set: { score } }, { new: true })
+        .exec()
+        .then(() => {
+          const reply = `You have been deducted 75 points for posting a title without a scope.`;
+          r.getSubmission(this.id)
+            .reply(reply)
+            .distinguish({ status: true, sticky: true });
+        });
+    });
   }
 }
 

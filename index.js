@@ -81,6 +81,7 @@ const removeDuplicates = (lastBatch, posts, start) => {
 const startSubmissionStream = () => {
   let lastBatch = [];
   const start = Date.now();
+  // const pattern = /[S]\d{1,2}[E]\d{1,2}/g;
 
   setInterval(() => {
     r.getSubreddit(process.env.SUB)
@@ -93,8 +94,13 @@ const startSubmissionStream = () => {
         newPosts.forEach((post) => {
           if (post.title.includes('Episode Discussion')) {
             const botReply = new Reply(post.id);
-            botReply.replyToPost();
+            botReply.replyWithLeaderboard();
           }
+          
+          // if (!post.title.match(pattern)) {
+          //   const botReply = new Reply(post.id);
+          //   botReply.replyWithDeduction(post.author.name)
+          // }
         });
       });
   }, 5000);
