@@ -37,7 +37,10 @@ const commentStream = client.CommentStream({
 const isExempt = (author) => {
   const exempt = [
     'AutoModerator',
-    'AccountingBot'
+    'AccountingBot',
+    'WandersFar',
+    'TheEnzyteGuy',
+    'BioregenerativeLamp'
   ];
 
   return exempt.includes(author); 
