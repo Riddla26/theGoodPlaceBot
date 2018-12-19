@@ -89,4 +89,14 @@ userSchema.statics.updateFlair = function updateFlair(username, flairClass, flai
   r.getUser(username).assignFlair(newFlair);
 };
 
+userSchema.statics.resetScores = function resetScores() {
+  const self = this;
+  self.update({}, { $set: { score: 0 } })
+    .exec()
+    .then((err, res) => {
+      console.log('>>> err resetting scores', err);
+      console.log('>>> resetting scores', res);
+    });
+};
+
 module.exports = mongoose.model('User', userSchema);

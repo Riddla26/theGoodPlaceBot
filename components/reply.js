@@ -48,7 +48,9 @@ class Reply {
   replyWithLeaderboard() {
     fetchScoreboard()
       .then((users) => {
+        User.resetScores();
         const reply = leaderboardPost(users);
+        
         r.getSubmission(this.id)
           .reply(reply)
           .distinguish({ status: true, sticky: true });
