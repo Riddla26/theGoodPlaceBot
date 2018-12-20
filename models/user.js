@@ -91,8 +91,7 @@ userSchema.statics.updateFlair = function updateFlair(username, flairClass, flai
 
 userSchema.statics.resetScores = function resetScores() {
   const self = this;
-  self.update({}, { $set: { score: 0 } })
-    .exec()
+  self.updateMany({}, { $set: { score: 0 } })
     .then((err, res) => {
       console.log('>>> err resetting scores', err);
       console.log('>>> resetting scores', res);

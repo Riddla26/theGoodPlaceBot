@@ -1,6 +1,8 @@
 const r = require('./../lib/reddit')();
 const User = require('../models/user');
 
+const sub = process.env.SUB;
+
 const scoreString = (user) => {
   return new Promise((resolve) => {
     User.count({})
@@ -35,7 +37,7 @@ const leaderboardPost = (users) => {
 };
 
 class Reply {
-  constructor(id) {
+  constructor(id = null) {
     this.id = id;
   }
 
@@ -43,6 +45,22 @@ class Reply {
     const reply = await scoreString(user);
     r.getComment(this.id)
       .reply(reply);
+  }
+
+  postLeaderboardTopic() {
+    fetchScoreboard()
+      .then((users) => {
+        const text = leaderboardPost(users);
+        const post = { title: 'meta Neighborhood Rankings', text };
+
+        User.resetScores();
+        
+        r.getSubreddit(sub)
+          .submitSelfpost(post)
+          .sticky()
+          .distinguish()
+          .approve()
+      });
   }
 
   replyWithLeaderboard() {
