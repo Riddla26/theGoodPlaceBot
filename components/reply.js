@@ -24,7 +24,7 @@ const fetchScoreboard = () => {
   });
 };
 
-const leaderboardPost = (users) => {
+const leaderboardPost = (users, includeLink = false) => {
   let replyString = '||Neighborhood Rankings||\n:---:|---|---\n';
 
   users.forEach((user, index) => {
@@ -32,6 +32,10 @@ const leaderboardPost = (users) => {
     const userString = `${rank}|${user.username}|${user.score}\n`;
     replyString += userString;
   });
+
+  if (includeLink) {
+    replyString += `\n\n[View Neighborhood Rankings](https://www.reddit.com/r/TheGoodPlace/wiki/neighborhoodrankings)\n\n`;
+  }
 
   return replyString;
 };
@@ -50,7 +54,7 @@ class Reply {
   postLeaderboardTopic() {
     fetchScoreboard()
       .then((users) => {
-        const text = leaderboardPost(users);
+        const text = leaderboardPost(users, true);
         const post = { title: 'meta Neighborhood Rankings', text };
 
         User.resetScores();
