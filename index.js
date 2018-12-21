@@ -4,7 +4,6 @@ if (!process.env.DEV) {
 }
 
 const express = require('express');
-const async = require('async');
 const snoostorm = require('snoostorm');
 
 const db = require('./lib/database');

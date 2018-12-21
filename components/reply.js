@@ -54,7 +54,7 @@ class Reply {
         const post = { title: 'meta Neighborhood Rankings', text };
 
         User.resetScores();
-        
+
         r.getSubreddit(sub)
           .submitSelfpost(post)
           .sticky()
@@ -72,6 +72,20 @@ class Reply {
         r.getSubmission(this.id)
           .reply(reply)
           .distinguish({ status: true, sticky: true });
+      });
+  }
+
+  postLeaderboardWiki() {
+    User.find({})
+      .sort({ score: -1 })
+      .exec((err, users) => {
+        const date = new Date();
+        const text = leaderboardPost(users);
+        const reason = `Updated leaderboard: ${date.getTime()}`;
+
+        r.getSubreddit(sub)
+          .getWikiPage('neighborhoodrankings')
+          .edit({ text, reason });
       });
   }
 
