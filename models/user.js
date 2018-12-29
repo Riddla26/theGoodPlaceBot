@@ -86,8 +86,6 @@ userSchema.statics.updateFlair = function updateFlair(username, flairClass, flai
     cssClass: flairClass,
   };
 
-  console.log(`awarding new flair to ${username}`);
-
   r.getUser(username).assignFlair(newFlair);
 };
 
