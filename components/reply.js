@@ -83,6 +83,11 @@ class Reply {
     User.find({})
       .sort({ score: -1 })
       .exec((err, users) => {
+
+        if (users.length > 322) {
+          users = users.slice(0, 321);
+        }
+        
         const date = new Date();
         const text = leaderboardPost(users);
         const reason = `Updated leaderboard: ${date.getTime()}`;
