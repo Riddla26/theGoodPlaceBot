@@ -85,7 +85,7 @@ class Reply {
       .exec((err, users) => {
 
         if (users.length > 322) {
-          users = users.slice(0, 321);
+          users = users.slice(0, 322);
         }
         
         const date = new Date();
